@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-public GameObject hazard;
+public GameObject[] hazards;
 public Vector3 spawnValues;
 public int hazardCount;
 public float spawnWait;
@@ -15,17 +15,21 @@ public float waveWait;
 public Text ScoreText;
 public Text restartText;
 public Text gameOverText;
+public Text winText;
 
 private bool gameOver;
+private bool winGame;
 private bool restart;
 private int score;
 
 void Start()
 {
 gameOver = false;
+winGame = false;
 restart = false;
 restartText.text = "";
 gameOverText.text = "";
+winText.text = "";
 score = 0;
 UpdateScore();
 StartCoroutine(SpawnWaves());
@@ -35,7 +39,7 @@ void Update ()
 {
     if (restart)
     {
-        if (Input.GetKeyDown (KeyCode.R))
+        if (Input.GetKeyDown (KeyCode.Q))
         {
             SceneManager.LoadScene("Main");
         }
@@ -54,6 +58,7 @@ IEnumerator SpawnWaves()
     {
         for (int i = 0; i < hazardCount; i++)
         {
+            GameObject hazard = hazards[Random.Range (0,hazards.Length)];
             Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
             Quaternion spawnRotation = Quaternion.identity;
             Instantiate(hazard, spawnPosition, spawnRotation);
@@ -61,9 +66,9 @@ IEnumerator SpawnWaves()
         }
         yield return new WaitForSeconds(waveWait);
 
-        if (gameOver)
+        if (gameOver || winGame)
         {
-            restartText.text = "Press 'R' for Restart";
+            restartText.text = "Press 'Q' for Restart";
             restart = true;
             break;
         }
@@ -72,8 +77,13 @@ IEnumerator SpawnWaves()
 
 public void AddScore(int newScoreValue)
 {
-score += newScoreValue;
-UpdateScore();
+    score += newScoreValue;
+    UpdateScore();
+    if (score >= 100)
+    {
+        winText.text = "You win! Game created by Rodrigo Cardenas";
+        winGame = true;
+    }
 }
 
 void UpdateScore()
@@ -83,7 +93,11 @@ ScoreText.text = "Score: " + score;
 
 public void GameOver ()
 {
-    gameOverText.text = "Game Over! Game created by Rodrigo Cardenas.";
-    gameOver = true;
+    if (winGame == false)
+    {
+        gameOverText.text = "Game Over! Game created by Rodrigo Cardenas.";
+        gameOver = true;
+    }
 }
+
 }
