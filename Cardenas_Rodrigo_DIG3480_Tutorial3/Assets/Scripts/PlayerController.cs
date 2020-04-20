@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
      private Rigidbody rb;
      private float nextFire;
 
+     public GameController gameController;
+
      private void Start()
      {
           rb = GetComponent<Rigidbody>();
@@ -36,6 +38,11 @@ public class PlayerController : MonoBehaviour
             Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
             musicSource.clip = musicClipOne;
             musicSource.Play();
+        }
+
+        if (gameController.winGame == true)
+        {
+             gameObject.tag = "God";
         }
     }
 
